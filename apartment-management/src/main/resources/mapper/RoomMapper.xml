@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huawei.apartment.mapper.RoomMapper">
+
+    <!-- 房间列表VO结果映射 -->
+    <resultMap id="RoomListVOResultMap" type="com.huawei.apartment.vo.RoomListVO">
+        <id column="room_id" property="roomId"/>
+        <result column="room_number" property="roomNumber"/>
+        <result column="floor" property="floor"/>
+        <result column="room_type" property="roomType"/>
+        <result column="area" property="area"/>
+        <result column="rent" property="rent"/>
+        <result column="status" property="status"/>
+        <result column="building_name" property="buildingName"/>
+        <result column="apartment_name" property="apartmentName"/>
+        <result column="city" property="city"/>
+        <result column="address" property="address"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 分页查询房间列表 -->
+    <select id="selectRoomPage" resultMap="RoomListVOResultMap">
+        SELECT
+            r.room_id,
+            r.room_number,
+            r.floor,
+            r.room_type,
+            r.area,
+            r.rent,
+            r.status,
+            b.name AS building_name,
+            a.name AS apartment_name,
+            a.city,
+            a.address,
+            r.created_at
+        FROM room r
+        LEFT JOIN building b ON r.building_id = b.building_id AND b.deleted_at IS NULL
+        LEFT JOIN apartment a ON r.apartment_id = a.apartment_id AND a.deleted_at IS NULL
+        WHERE r.deleted_at IS NULL
+        <if test="apartmentId != null">
+            AND r.apartment_id = #{apartmentId}
+        </if>
+        <if test="buildingId != null">
+            AND r.building_id = #{buildingId}
+        </if>
+        <if test="roomNumber != null and roomNumber != ''">
+            AND r.room_number LIKE CONCAT('%', #{roomNumber}, '%')
+        </if>
+        <if test="status != null">
+            AND r.status = #{status}
+        </if>
+        ORDER BY r.apartment_id, r.building_id, r.floor, r.room_number
+    </select>
+
+    <!-- 统计公寓下各状态房间数量 -->
+    <select id="countByApartmentIdAndStatus" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM room
+        WHERE apartment_id = #{apartmentId}
+          AND status = #{status}
+          AND deleted_at IS NULL
+    </select>
+
+</mapper>

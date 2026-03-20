@@ -1,0 +1,81 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: apartment-management
+
+  # 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/apartment_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: ApartmentHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+  # Jackson配置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+
+# MyBatis-Plus配置
+mybatis-plus:
+  # Mapper XML文件位置
+  mapper-locations: classpath:mapper/*.xml
+  # 实体类扫描路径
+  type-aliases-package: com.huawei.apartment.entity
+  # 全局配置
+  global-config:
+    # 数据库相关配置
+    db-config:
+      # 主键类型 AUTO:自增 INPUT:用户输入 ID_WORKER:全局唯一ID UUID:UUID
+      id-type: AUTO
+      # 逻辑删除配置
+      logic-delete-field: deletedAt
+      logic-delete-value: 'NULL'
+      logic-not-delete-value: 'NULL'
+    # 关闭MP3.0自带的banner
+    banner: false
+  # 原生配置
+  configuration:
+    # 是否开启自动驼峰命名规则映射
+    map-underscore-to-camel-case: true
+    # 开启Mybatis二级缓存,默认为 true
+    cache-enabled: false
+    # 日志输出
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+# Swagger配置
+swagger:
+  enabled: true
+  title: 公寓管理系统API文档
+  description: 公寓管理系统接口文档
+  version: 1.0.0
+  base-package: com.huawei.apartment.controller
+  base-path: /**
+
+# 日志配置
+logging:
+  level:
+    com.huawei.apartment: debug
+    com.huawei.apartment.mapper: debug
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n'
+  file:
+    name: logs/apartment-management.log
+    max-size: 10MB
+    max-history: 30

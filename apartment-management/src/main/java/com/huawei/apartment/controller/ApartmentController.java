@@ -77,8 +77,8 @@ public class ApartmentController {
      * @return 是否成功
      */
     @ApiOperation("删除公寓")
-    @DeleteMapping("/delete/{apartmentId}")
-    public Result<Boolean> delete(@PathVariable Long apartmentId) {
+    @DeleteMapping("/delete")
+    public Result<Boolean> delete(@RequestParam Long apartmentId) {
         log.info("删除公寓,公寓ID: {}", apartmentId);
         Boolean result = apartmentService.deleteApartment(apartmentId);
         return Result.success(result, "删除成功");
